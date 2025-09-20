@@ -2,12 +2,13 @@ use cosmwasm_std::{
     entry_point, to_binary, Addr, BankMsg, Binary, Coin, Deps, DepsMut, Env, Event, MessageInfo, Response, StdError, StdResult
 };
 use cw2::set_contract_version;
+use cw_storage_plus::{Map, Item};
 use sha2::{Digest, Sha256};
 
 use crate::msg::{ExecuteMsg, InstantiateMsg, OracleDataResponse, QueryMsg};
-use crate::state::{ADMIN, ORACLE_DATA, ORACLE_PUBKEY, ORACLE_PUBKEY_TYPE, parse_key_type};
+use crate::state::{ADMIN, ORACLE_DATA, ORACLE_PUBKEY, ORACLE_PUBKEY_TYPE, VALID_TRANSACTIONS, parse_key_type};
 
-const CONTRACT_NAME: &str = "crates.io:oracle-contract";
+const CONTRACT_NAME: &str = "crates.io:aml-contract";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[entry_point]
@@ -52,6 +53,9 @@ pub fn execute(
         }
         ExecuteMsg::UpdateOracle { new_pubkey, new_key_type } => {
             execute_update_oracle(deps, info, new_pubkey, new_key_type)
+        }
+        ExecuteMsg::AddValidTransaction { transaction } => {
+            add_valid_transaction(deps, transaction)
         }
     }
 }
@@ -176,5 +180,39 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
             let admin = ADMIN.load(deps.storage)?;
             to_binary(&AdminResponse { admin })
         }
+        QueryMsg::GetValidTransactions {} => {
+            let txs = get_all_valid_transactions(deps)?;
+            to_binary(&txs)
+        }
     }
+}
+
+fn add_valid_transaction(
+    deps: DepsMut,
+    tx: crate::msg::ValidTransaction,
+) -> StdResult<Response> {
+    let count_item: Item<u64> = Item::new("valid_tx_count");
+    let mut count = count_item.may_load(deps.storage)?.unwrap_or(0);
+
+    VALID_TRANSACTIONS.save(deps.storage, count, &tx)?;
+
+    count += 1;
+    count_item.save(deps.storage, &count)?;
+
+    let event = Event::new("add_valid_transaction")
+        .add_attribute("action", "add_valid_transaction")
+        .add_attribute("sender", tx.sender.to_string())
+        .add_attribute("receiver", tx.receiver.to_string())
+        .add_attribute("amount", tx.amount.to_string())
+        .add_attribute("timestamp", tx.timestamp.to_string());
+
+    Ok(Response::new().add_event(event))
+}
+
+fn get_all_valid_transactions(deps: Deps) -> StdResult<Vec<crate::msg::ValidTransaction>> {
+    let txs: Vec<_> = VALID_TRANSACTIONS
+        .range(deps.storage, None, None, cosmwasm_std::Order::Ascending)
+        .map(|item| item.map(|(_, tx)| tx))
+        .collect::<StdResult<Vec<_>>>()?;
+    Ok(txs)
 }

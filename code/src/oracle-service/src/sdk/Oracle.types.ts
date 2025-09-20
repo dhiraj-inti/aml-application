@@ -23,15 +23,27 @@ export type ExecuteMsg = {
     new_key_type?: string | null;
     new_pubkey: Binary;
   };
+} | {
+  add_valid_transaction: {
+    transaction: ValidTransaction;
+  };
 };
+export type Addr = string;
+export interface ValidTransaction {
+  amount: number;
+  receiver: Addr;
+  sender: Addr;
+  timestamp: number;
+}
 export type QueryMsg = {
   get_oracle_data: {};
 } | {
   get_oracle_pubkey: {};
 } | {
   get_admin: {};
+} | {
+  get_valid_transactions: {};
 };
-export type Addr = string;
 export interface AdminResponse {
   admin: Addr;
 }
@@ -42,3 +54,4 @@ export interface OraclePubkeyResponse {
   key_type: string;
   pubkey: Binary;
 }
+export type ArrayOfValidTransaction = ValidTransaction[];

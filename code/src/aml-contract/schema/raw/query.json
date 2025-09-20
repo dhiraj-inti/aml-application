@@ -43,6 +43,20 @@
         }
       },
       "additionalProperties": false
+    },
+    {
+      "description": "Returns: Vec<ValidTransaction>",
+      "type": "object",
+      "required": [
+        "get_valid_transactions"
+      ],
+      "properties": {
+        "get_valid_transactions": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     }
   ]
 }

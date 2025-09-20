@@ -20,6 +20,15 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct ValidTransaction {
+    pub sender: Addr,
+    pub receiver: Addr,
+    pub amount: u128,
+    pub timestamp: u64,
+}
+
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct InstantiateMsg {
     pub oracle_pubkey: Binary,
     pub oracle_key_type: String, // "secp256k1" or "ed25519"
@@ -31,6 +40,7 @@ pub enum ExecuteMsg {
     Send { recipient: String },
     OracleDataUpdate { data: String, signature: Binary },
     UpdateOracle { new_pubkey: Binary, new_key_type: Option<String> },
+    AddValidTransaction { transaction: ValidTransaction }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -46,4 +56,7 @@ pub enum QueryMsg {
     /// Returns: AdminResponse
     #[returns(AdminResponse)]
     GetAdmin {},
+    /// Returns: Vec<ValidTransaction>
+    #[returns(Vec<ValidTransaction>)]
+    GetValidTransactions {},
 }

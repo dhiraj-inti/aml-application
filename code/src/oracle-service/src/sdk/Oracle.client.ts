@@ -6,12 +6,13 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Binary, InstantiateMsg, ExecuteMsg, QueryMsg, Addr, AdminResponse, OracleDataResponse, OraclePubkeyResponse } from "./Oracle.types";
+import { Binary, InstantiateMsg, ExecuteMsg, Addr, ValidTransaction, QueryMsg, AdminResponse, OracleDataResponse, OraclePubkeyResponse, ArrayOfValidTransaction } from "./Oracle.types";
 export interface OracleReadOnlyInterface {
   contractAddress: string;
   getOracleData: () => Promise<OracleDataResponse>;
   getOraclePubkey: () => Promise<OraclePubkeyResponse>;
   getAdmin: () => Promise<AdminResponse>;
+  getValidTransactions: () => Promise<ArrayOfValidTransaction>;
 }
 export class OracleQueryClient implements OracleReadOnlyInterface {
   client: CosmWasmClient;
@@ -22,6 +23,7 @@ export class OracleQueryClient implements OracleReadOnlyInterface {
     this.getOracleData = this.getOracleData.bind(this);
     this.getOraclePubkey = this.getOraclePubkey.bind(this);
     this.getAdmin = this.getAdmin.bind(this);
+    this.getValidTransactions = this.getValidTransactions.bind(this);
   }
   getOracleData = async (): Promise<OracleDataResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
@@ -36,6 +38,11 @@ export class OracleQueryClient implements OracleReadOnlyInterface {
   getAdmin = async (): Promise<AdminResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       get_admin: {}
+    });
+  };
+  getValidTransactions = async (): Promise<ArrayOfValidTransaction> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_valid_transactions: {}
     });
   };
 }
@@ -61,6 +68,11 @@ export interface OracleInterface extends OracleReadOnlyInterface {
     newKeyType?: string;
     newPubkey: Binary;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  addValidTransaction: ({
+    transaction
+  }: {
+    transaction: ValidTransaction;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class OracleClient extends OracleQueryClient implements OracleInterface {
   client: SigningCosmWasmClient;
@@ -74,6 +86,7 @@ export class OracleClient extends OracleQueryClient implements OracleInterface {
     this.send = this.send.bind(this);
     this.oracleDataUpdate = this.oracleDataUpdate.bind(this);
     this.updateOracle = this.updateOracle.bind(this);
+    this.addValidTransaction = this.addValidTransaction.bind(this);
   }
   send = async ({
     recipient
@@ -111,6 +124,17 @@ export class OracleClient extends OracleQueryClient implements OracleInterface {
       update_oracle: {
         new_key_type: newKeyType,
         new_pubkey: newPubkey
+      }
+    }, fee, memo, _funds);
+  };
+  addValidTransaction = async ({
+    transaction
+  }: {
+    transaction: ValidTransaction;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      add_valid_transaction: {
+        transaction
       }
     }, fee, memo, _funds);
   };
