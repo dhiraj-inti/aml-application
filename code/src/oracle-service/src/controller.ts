@@ -42,6 +42,36 @@ const updateOracleData = asyncHandler(async (req, res, next) => {
     }
 });
 
+const addValidTransaction = asyncHandler(async (req, res, next) => {
+    try {
+        const { sender, receiver, amount, timestamp } = req.body;
+
+        // Call the contract's addValidTransaction method
+        const result = await oracle_client.addValidTransaction({
+            transaction: {
+                sender,
+                receiver,
+                amount,
+                timestamp
+            }
+        });
+        console.log(result)
+        res.sendStatus(200)
+    } catch (error) {  
+        next(error);
+    }
+});
+
+const getValidTransactions = asyncHandler(async (req, res, next) => {
+    try {
+        // Query the contract for the list of valid transactions
+        const transactions = await query_client.getValidTransactions();
+        res.json(transactions);
+    } catch (error) {
+        next(error);
+    }
+});
+
 (async () => {
     priv_key = process.env.ORACLE_PRIVKEY!
     oracle_client = await getClient();
@@ -50,5 +80,7 @@ const updateOracleData = asyncHandler(async (req, res, next) => {
 
 export {
     getOracleData,
-    updateOracleData
+    updateOracleData,
+    addValidTransaction,
+    getValidTransactions
 }

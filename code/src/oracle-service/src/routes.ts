@@ -3,9 +3,15 @@ import cors from 'cors';
 const router = express.Router();
 router.use(cors())
 import {
-    getOracleData, updateOracleData
+    addValidTransaction,
+    getOracleData, getValidTransactions, updateOracleData
 } from "./controller";
 
+// Add a txn
+router.route('/add-transaction').post(addValidTransaction);
+
+// Get all txns
+router.route('/valid-transactions').get(getValidTransactions);
 
 // execute
 router.route('/oracle-data').post(updateOracleData);
