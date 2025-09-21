@@ -87,9 +87,9 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
     ```
 3. Start the Express server:
     ```bash
-    npm start
+    npx ts-node src\app.ts
     ```
-4. The service will be available at `http://localhost:4000` (or as configured).
+4. The service will be available at `http://localhost:8080` (or as configured).
 
 **Files:**
 - `src/app.ts`: Main Express app.
