@@ -94,23 +94,27 @@ function Home() {
       sender,
       receiver,
       amount,
-      timestamp,
+      timestamp: timestamp ? new Date(timestamp).toISOString().replace('Z', '') : "",
     };
+    console.log(payload);
+    
 
     try {
       // Example POST request
-      // const response = await fetch('https://your-api-endpoint.com/submit', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(payload),
-      // });
-      // const data = await response.json();
-      // if (response.status === 200) {
+      const response = await fetch('http://localhost:5000/aml-checks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      console.log(data);
+      
+      if (response.status === 200) {
       setResponseData(payload); // For demo, show payload
       setShowResponse(true);
-      // } else {
-      //   setApiMessage(data.message || 'Error submitting data');
-      // }
+      } else {
+        setApiMessage(data.message || 'Error submitting data');
+      }
     } catch (error) {
       setApiMessage("Error submitting data");
     } finally {
@@ -204,12 +208,13 @@ function Home() {
         />
         <label className="block text-white mb-2 font-semibold">Timestamp</label>
         <input
-          type="number"
+          type="datetime-local"
           value={timestamp}
           onChange={(e) => setTimestamp(e.target.value)}
           className="block w-full text-gray-200 bg-gray-700 border border-gray-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
+       
         <button
           type="submit"
           disabled={loading || !csvFile}
