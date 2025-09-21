@@ -47,7 +47,7 @@ def invoke_add_to_blockchain_service(sender, receiver, amount, timestamp):
     print(response.status_code, response.text)
     if response.status_code != 200:
         raise Exception("Error calling oracle service")
-    return response.json()
+    return response.text
 
 if __name__ == '__main__':
     app.run(debug=True, port=port)
