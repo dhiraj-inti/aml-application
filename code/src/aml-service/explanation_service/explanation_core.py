@@ -2,55 +2,62 @@ import pandas as pd
 import requests
 import os
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_API_URL = os.getenv("GEMINI_API_URL","https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent")
 
 
-def prepare_analysis_data(historical_data, transaction):
-    """Prepare a forensic risk analysis report based on historical data and new transaction"""
-    
+def prepare_analysis_data(historical_data, transaction, rules):
+    """Prepare a forensic risk analysis report using explicit rules and historical reference"""
+
+    rules_text = "\n".join([
+        f"{i+1}. {r['rule']} (Thresholds: {', '.join([f'{k}={v}' for k, v in r.items() if k != 'rule'])})"
+        for i, r in enumerate(rules)
+    ])
+
+    transaction_text = "\n".join([
+        f"- {k.replace('_', ' ').capitalize()}: {v}"
+        for k, v in transaction.items()
+    ])
+
     analysis_text = f"""
     FORENSIC CRYPTO TRANSACTION RISK REPORT
 
-    SECTION 1: HISTORICAL TRANSACTION OVERVIEW
-    - Data Summary:
+    SECTION 1: HISTORICAL TRANSACTION REFERENCE
+    - Data Source: transaction_history.csv
+    - Summary Table:
     {historical_data.to_string()}
-    - Key Patterns: Identify notable trends, anomalies, or outliers in historical activity.
+    - Key Patterns: Identify trends, anomalies, or outliers in historical wallet activity.
 
-    SECTION 2: NEW TRANSACTION DETAILS
-    - Sender: {transaction['sender']}
-    - Receiver: {transaction['receiver']}
-    - Amount: {transaction['amount']} BTC
-    - Timestamp: {transaction['timestamp']}
-    - Flagged as fraudulent: {transaction['fraudulent']}
-    - Risk score: {transaction['risk_score']}/10
+    SECTION 2: CURRENT TRANSACTION DETAILS
+    {transaction_text}
 
-    SECTION 3: FRAUD DETECTION RULES & BENCHMARKS
-    1. Mean transaction amount < 750,000 BTC
-    2. Average time intervals ≥ 10 hours (36,000 seconds)
-    3. Unique senders (recipient perspective) ≤ 7
-    4. Unique recipients ≤ 7
-    5. Fan-in/fan-out ratio (ratio_in_out) between 0.5 and 1.5
-    6. Big TXN sum/small TXN sum ratio: high values indicate risk
+    SECTION 3: APPLIED FRAUD DETECTION RULES
+    The following rules are used to assess the current transaction:
+    {rules_text}
 
-    SECTION 4: FORENSIC ANALYSIS REQUEST
-    Please provide a detailed forensic report addressing:
-    - The specific reasons this transaction was flagged as fraudulent (risk score: {transaction['risk_score']}/10).
-    - Which rules or benchmarks were violated, with direct references to the data.
-    - Comparative analysis: How does this transaction differ from historical wallet behavior?
-    - Breakdown of risk factors and their contribution to the overall score.
-    - Actionable recommendations for investigators, including next steps and potential red flags.
-    - If applicable, suggest additional data or context that could improve the risk assessment.
+    SECTION 4: ANALYSIS TASK
+    Please provide a structured forensic risk report that includes:
+    1. Which specific rules were violated by the current transaction, referencing both the transaction details and historical data and give it in the bulletins format.
+    2. Perform a correlation check between the current transaction and historical wallet behavior with the help of the rules.
+    3. A breakdown of risk factors. Please present the breakdown as a bulleted list. For each risk factor, include:
+        - Risk Factor Name
+        - Justification
+        - Why this contribution is needed for the overall risk assessment
+        End the list with a summary bullet for **Overall Risk Assessment**.
+    4. Actionable recommendations for investigators, including next steps and potential red flags.
+    5. Suggestions for additional data or context that could improve future risk assessments.
 
-    Format your response as a structured forensic report, using bullet points, tables, or numbered lists where appropriate. Be concise, evidence-based, and professional.
+
+    Format your response as a professional forensic report, using bullet points, tables, or numbered lists where appropriate. Be concise, evidence-based, and reference both the rules and historical data.
     """
-    
+
     return analysis_text
 
-def generate_risk_analysis(transaction_payload):
+
+def generate_risk_analysis(RULES, transaction_payload):
     try:
         historical_data = pd.read_csv('transaction_history.csv')
-        prompt_text = prepare_analysis_data(historical_data, transaction_payload)
+        prompt_text = prepare_analysis_data(historical_data, transaction_payload, RULES)
 
         headers = {
             "Content-Type": "application/json",
@@ -90,4 +97,13 @@ def generate_risk_analysis(transaction_payload):
         print(f"Error: {str(e)}")
 
 # if __name__ == "__main__":
-#     generate_risk_analysis()
+#     RULES = [
+#     {"rule": "Mean transaction amount < 187.5 BTC", "threshold": MEAN_BTC_THRESHOLD},
+#     {"rule": "Average time intervals ≥ 36,000 seconds (10 hours)", "threshold": AVG_INTERVAL_SECONDS_MIN},
+#     {"rule": "Unique senders ≤ 7", "threshold": UNIQUE_SENDERS_MAX},
+#     {"rule": "Unique receivers ≤ 7", "threshold": UNIQUE_RECEIVERS_MAX},
+#     {"rule": "Fan-in/fan-out ratio between 0.5 and 1.5", "min": RATIO_MIN, "max": RATIO_MAX},
+#     {"rule": "Big TXN threshold ≥ 1.0 BTC", "threshold": BIG_TXN_BTC_THRESHOLD},
+# ]
+    
+    # generate_risk_analysis(RULES, sample_prediction_payload)
