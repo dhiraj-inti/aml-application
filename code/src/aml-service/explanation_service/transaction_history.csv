@@ -1,4 +1,4 @@
-input_address,output_address,transaction_value_btc,timestamp
+sender,receiver,amount,timestamp
 1FcKN6JbczAdoe2dw3nb5EjDZCBtkBjWrt,1AYoy8uE8Nzb4snVnJod2urxiS8cL1Mfp,2.13802447,2017-01-30 20:00:00
 bc173u6s74ksmz4x34x77j67znavtcw3m7mw49zkgq,3ehxxDA63h5SgcHHmHPnQXRhvvNbLMzGA,25.10501797,2017-09-05 01:00:00
 3pRhyLyh9MoHEKy1BaCX7GLMEn5p4hih7,1x8mpw4QV9uSzB8zuAGZ2i84obUJaQrT,27.94052162,2017-02-04 10:00:00
