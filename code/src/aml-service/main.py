@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, request
 import requests
 
@@ -17,6 +18,13 @@ def aml_checks():
     receiver = data.get('receiver') # type: ignore
     amount = data.get('amount') # type: ignore
     timestamp = data.get('timestamp') # type: ignore
+
+    if not sender or not receiver or not amount or not timestamp:
+        return {
+            "error": "Missing required fields"
+        }
+
+
     # Step 2: If flagged for explanation, call the explanation service
     # else call the oracle service to add transaction to the blockchain
     try:
@@ -36,8 +44,19 @@ def aml_checks():
         "message": message
     }, 200
 
+def is_iso_timestamp(iso_timestamp):
+    try:
+        # Replace 'Z' with '+00:00' for UTC
+        datetime.fromisoformat(iso_timestamp.replace("Z", "+00:00"))
+        return True
+    except ValueError:
+        return False
+
 def invoke_add_to_blockchain_service(sender, receiver, amount, timestamp):
     # Logic to call the oracle service to add transaction to the blockchain
+    if is_iso_timestamp(timestamp):
+        dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        timestamp = int(dt.timestamp())
     response = requests.post("http://localhost:8080/oracle/add-transaction", json={
         "sender":sender,
         "amount":amount,

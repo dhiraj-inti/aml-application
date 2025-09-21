@@ -7,99 +7,153 @@
 	},
 	"item": [
 		{
-			"name": "get-oracle-data",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/oracle/oracle-data",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"oracle",
-						"oracle-data"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "update-oracle-data",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/oracle/oracle-data?msg=dhiraj1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"oracle",
-						"oracle-data"
-					],
-					"query": [
-						{
-							"key": "msg",
-							"value": "dhiraj1"
+			"name": "AML Service",
+			"item": [
+				{
+					"name": "AML Service health check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "add-txn-in-oracle",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"sender\": \"wasm1sse6pdmn5s7epjycxadjzku4qfgs604cgur6me\",\r\n    \"receiver\": \"wasm1ga4d4tsxrk6na6ehttwvdfmn2ejy4gwfxpt2m7\",\r\n    \"amount\": 5000,\r\n    \"timestamp\": 1695200022\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:8080/oracle/add-transaction",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"oracle",
-						"add-transaction"
-					]
+				{
+					"name": "AML Checks",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sender\": \"wasm1sse6pdmn5s7epjycxadjzku4qfgs604cgur6me\",\r\n    \"receiver\": \"wasm1ga4d4tsxrk6na6ehttwvdfmn2ejy4gwfxpt2m7\",\r\n    \"amount\": 50,\r\n    \"timestamp\": 1695200022\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/aml-checks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"aml-checks"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "get-all-txns",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/oracle/valid-transactions",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"oracle",
-						"valid-transactions"
-					]
+			"name": "Oracle Service",
+			"item": [
+				{
+					"name": "get-oracle-data",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/oracle/oracle-data",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"oracle",
+								"oracle-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-oracle-data",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/oracle/oracle-data?msg=dhiraj1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"oracle",
+								"oracle-data"
+							],
+							"query": [
+								{
+									"key": "msg",
+									"value": "dhiraj1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-txn-in-oracle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sender\": \"wasm1sse6pdmn5s7epjycxadjzku4qfgs604cgur6me\",\r\n    \"receiver\": \"wasm1ga4d4tsxrk6na6ehttwvdfmn2ejy4gwfxpt2m7\",\r\n    \"amount\": 5000,\r\n    \"timestamp\": 1695200022\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/oracle/add-transaction",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"oracle",
+								"add-transaction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-txns",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/oracle/valid-transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"oracle",
+								"valid-transactions"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }
