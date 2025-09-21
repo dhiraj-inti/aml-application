@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "54fa19f7-4a13-4eed-98f6-4a226e4426bf",
+		"_postman_id": "411622d0-7829-4d57-827b-ba81b8151e0b",
 		"name": "AML Hackathon",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26866618"
+		"_exporter_id": "30174198"
 	},
 	"item": [
 		{
@@ -32,7 +32,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/oracle/oracle-data?msg=hi!",
+					"raw": "http://localhost:8080/oracle/oracle-data?msg=dhiraj1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -45,8 +45,57 @@
 					"query": [
 						{
 							"key": "msg",
-							"value": "hi!"
+							"value": "dhiraj1"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add-txn-in-oracle",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sender\": \"wasm1sse6pdmn5s7epjycxadjzku4qfgs604cgur6me\",\r\n    \"receiver\": \"wasm1ga4d4tsxrk6na6ehttwvdfmn2ejy4gwfxpt2m7\",\r\n    \"amount\": 5000,\r\n    \"timestamp\": 1695200022\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/oracle/add-transaction",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oracle",
+						"add-transaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-all-txns",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oracle/valid-transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oracle",
+						"valid-transactions"
 					]
 				}
 			},
