@@ -7,16 +7,24 @@ UNIQUE_RECEIVERS_MAX = 7
 RATIO_MIN = 0.5
 RATIO_MAX = 1.5
 BIG_TXN_BTC_THRESHOLD = 1.0
-INTERVAL_SECONDS_MIN = 720000 
+INTERVAL_SECONDS_MIN = 720000
 
 RULES = [
-    {"rule": "Mean transaction amount < 187.5 BTC", "threshold": MEAN_BTC_THRESHOLD},
-    {"rule": "Average time intervals ≥ 36,000 seconds (200 hours)", "threshold": INTERVAL_SECONDS_MIN},
-    {"rule": "Unique senders ≤ 7", "threshold": UNIQUE_SENDERS_MAX},
-    {"rule": "Unique receivers ≤ 7", "threshold": UNIQUE_RECEIVERS_MAX},
-    {"rule": "Fan-in/fan-out ratio between 0.5 and 1.5", "min": RATIO_MIN, "max": RATIO_MAX},
-    {"rule": "Big TXN threshold ≥ 1.0 BTC", "threshold": BIG_TXN_BTC_THRESHOLD},
+    {"rule": "Mean transaction amount > 47.5 BTC", "threshold": MEAN_BTC_THRESHOLD},
+    {
+        "rule": "Average time intervals < 720,000 seconds (200 hours)",
+        "threshold": INTERVAL_SECONDS_MIN,
+    },
+    {"rule": "Unique senders > 7", "threshold": UNIQUE_SENDERS_MAX},
+    {"rule": "Unique receivers > 7", "threshold": UNIQUE_RECEIVERS_MAX},
+    {
+        "rule": "Fan-in/fan-out ratio not between 0.5 and 1.5",
+        "min": RATIO_MIN,
+        "max": RATIO_MAX,
+    },
+    {"rule": "Big TXN threshold < 1.0 BTC", "threshold": BIG_TXN_BTC_THRESHOLD},
 ]
+
 
 def load_transactions(path):
     df = pd.read_csv(path)
@@ -26,6 +34,7 @@ def load_transactions(path):
         raise ValueError(f"Input file missing required columns: {missing}")
     df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
     return df
+
 
 def compute_wallet_metrics(wallet, txs_df, sender, receiver, amount, timestamp):
 
@@ -54,7 +63,7 @@ def compute_wallet_metrics(wallet, txs_df, sender, receiver, amount, timestamp):
     print(
         relevant["timestamp"].iloc[0],
         relevant["timestamp"].iloc[19],
-        relevant["timestamp"].iloc[-1]
+        relevant["timestamp"].iloc[-1],
     )
 
     mean_tx_btc = relevant["amount"].mean()
@@ -64,19 +73,11 @@ def compute_wallet_metrics(wallet, txs_df, sender, receiver, amount, timestamp):
         else 0.0
     )
 
-    unique_senders = relevant.loc[
-        relevant["receiver"] == wallet, "sender"
-    ].nunique()
+    unique_senders = relevant.loc[relevant["receiver"] == wallet, "sender"].nunique()
 
-    unique_receivers = relevant.loc[
-        relevant["sender"] == wallet, "receiver"
-    ].nunique()
-    total_input_btc = relevant.loc[
-        relevant["sender"] == wallet, "amount"
-    ].sum()
-    total_output_btc = relevant.loc[
-        relevant["receiver"] == wallet, "amount"
-    ].sum()
+    unique_receivers = relevant.loc[relevant["sender"] == wallet, "receiver"].nunique()
+    total_input_btc = relevant.loc[relevant["sender"] == wallet, "amount"].sum()
+    total_output_btc = relevant.loc[relevant["receiver"] == wallet, "amount"].sum()
     ratio_in_out = (
         total_input_btc / total_output_btc if total_output_btc != 0 else np.nan
     )
@@ -116,8 +117,7 @@ def compute_wallet_metrics(wallet, txs_df, sender, receiver, amount, timestamp):
             float(ratio_big_small) if not np.isnan(ratio_big_small) else None
         ),
         "fraudulent_transaction_flag": int(fraudulent_flag),
-        "rules": RULES
-    }
+    }, RULES
 
 
 if __name__ == "__main__":
@@ -134,7 +134,9 @@ if __name__ == "__main__":
     txs_df = load_transactions(txs_path)
 
     wallet = receiver  # or receiver
-    metrics = compute_wallet_metrics(wallet, txs_df, sender, receiver, amount, timestamp)
+    metrics = compute_wallet_metrics(
+        wallet, txs_df, sender, receiver, amount, timestamp
+    )
     print(metrics)
 
     # 2022-09-27T18:00:00.000

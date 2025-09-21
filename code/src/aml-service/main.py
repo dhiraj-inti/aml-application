@@ -2,6 +2,8 @@ from datetime import datetime
 from flask import Flask, request
 import requests
 from flask_cors import CORS
+import pandas as pd
+from aml_core import compute_wallet_metrics
 
 from explanation_service.explanation_core import generate_risk_analysis
 import base64
@@ -71,37 +73,51 @@ def aml_checks():
         return {
             "error": "Missing required fields"
         }
-    
 
+    txs_df = pd.read_csv("explanation_service/transaction_history.csv")
+    # Compute wallet metrics for sender and receiver
+    sender_res, sender_rules = compute_wallet_metrics(
+        wallet=sender,
+        txs_df=txs_df,
+        sender=sender,
+        receiver=receiver,
+        amount=amount,
+        timestamp=timestamp,
+    )
+    receiver_res, receiver_rules = compute_wallet_metrics(
+        wallet=receiver,
+        txs_df=txs_df,
+        sender=sender,
+        receiver=receiver,
+        amount=amount,
+        timestamp=timestamp,
+    )
 
+    sender_flag = sender_res.get("fraudulent_transaction_flag")
+    receiver_flag = receiver_res.get("fraudulent_transaction_flag")
 
-    # Step 2: If flagged for explanation, call the explanation service
-    # else call the oracle service to add transaction to the blockchain
     try:
-        if flag:
-            transaction_payload = {
-                "sender": sender,
-                "receiver": receiver,
-                "amount": amount,
-                "timestamp": timestamp,
-                "fraudulent": True,
-                "risk_score": 8  # Example risk score
-            }
-            response = generate_risk_analysis(transaction_payload)
-            message = response
+        if sender_flag and receiver_flag:
+            sender_msg = generate_risk_analysis(sender_rules, sender_res)
+            receiver_msg = generate_risk_analysis(receiver_rules, receiver_res)
+            message = (
+                f"Sender Analysis:\n{sender_msg}\n\nReceiver Analysis:\n{receiver_msg}"
+            )
+            flag = True
+        elif sender_flag:
+            message = generate_risk_analysis(sender_rules, sender_res)
+            flag = True
+        elif receiver_flag:
+            message = generate_risk_analysis(receiver_rules, receiver_res)
+            flag = True
         else:
-            response = invoke_add_to_blockchain_service(sender, receiver, amount, timestamp)
+            invoke_add_to_blockchain_service(sender, receiver, amount, timestamp)
             message = "Added to blockchain successfully"
+            flag = False
     except Exception as e:
-        return {
-            "flag": None,
-            "message": "Exception occurred: " + str(e)
-        }, 500
-    
-    return {
-        "flag": flag,
-        "message": message
-    }, 200
+        return {"flag": None, "message": f"Exception occurred: {e}"}, 500
+
+    return {"flag": flag, "message": message}, 200
 
 def is_iso_timestamp(iso_timestamp):
     try:
