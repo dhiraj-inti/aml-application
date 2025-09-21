@@ -2,6 +2,8 @@ from datetime import datetime
 from flask import Flask, request
 import requests
 
+from explanation_service.explanation_core import generate_risk_analysis
+
 app = Flask("aml-service")
 port = 5000
 
@@ -23,13 +25,24 @@ def aml_checks():
         return {
             "error": "Missing required fields"
         }
+    
+
 
 
     # Step 2: If flagged for explanation, call the explanation service
     # else call the oracle service to add transaction to the blockchain
     try:
         if flag:
-            message = "<Explanation from explanation service>"
+            transaction_payload = {
+                "sender": sender,
+                "receiver": receiver,
+                "amount": amount,
+                "timestamp": timestamp,
+                "fraudulent": True,
+                "risk_score": 8  # Example risk score
+            }
+            response = generate_risk_analysis(transaction_payload)
+            message = response
         else:
             response = invoke_add_to_blockchain_service(sender, receiver, amount, timestamp)
             message = "Added to blockchain successfully"
@@ -57,13 +70,14 @@ def invoke_add_to_blockchain_service(sender, receiver, amount, timestamp):
     if is_iso_timestamp(timestamp):
         dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
         timestamp = int(dt.timestamp())
+
     response = requests.post("http://localhost:8080/oracle/add-transaction", json={
         "sender":sender,
         "amount":amount,
         "receiver":receiver,
         "timestamp":timestamp
     })
-    print(response.status_code, response.text)
+   
     if response.status_code != 200:
         raise Exception("Error calling oracle service")
     return response.text

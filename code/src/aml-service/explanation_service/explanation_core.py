@@ -2,19 +2,9 @@ import pandas as pd
 import requests
 import os
 
-GEMINI_API_KEY = "" #gemini api key
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_URL = os.getenv("GEMINI_API_URL","https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent")
 
-
-# Sample transaction payload
-transaction_payload = {
-    "sender": "wasm1sse6pdmn5s7epjycxadjzku4qfgs604cgur6me",
-    "receiver": "wasm1ga4d4tsxrk6na6ehttwvdfmn2ejy4gwfxpt2m7",
-    "amount": 5000,
-    "timestamp": 1695200022,
-    "fraudulent": True,
-    "risk_score": 8
-}
 
 def prepare_analysis_data(historical_data, transaction):
     """Prepare a forensic risk analysis report based on historical data and new transaction"""
@@ -57,7 +47,7 @@ def prepare_analysis_data(historical_data, transaction):
     
     return analysis_text
 
-def generate_risk_analysis():
+def generate_risk_analysis(transaction_payload):
     try:
         historical_data = pd.read_csv('transaction_history.csv')
         prompt_text = prepare_analysis_data(historical_data, transaction_payload)
@@ -88,6 +78,8 @@ def generate_risk_analysis():
             result = response.json()
             # Print the model's reply
             print(result['candidates'][0]['content']['parts'][0]['text'])
+            report = result['candidates'][0]['content']['parts'][0]['text']
+            return report
         else:
             print(f"Error: {response.status_code} - {response.text}")
 
@@ -97,5 +89,5 @@ def generate_risk_analysis():
     except Exception as e:
         print(f"Error: {str(e)}")
 
-if __name__ == "__main__":
-    generate_risk_analysis()
+# if __name__ == "__main__":
+#     generate_risk_analysis()
