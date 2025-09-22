@@ -33,8 +33,8 @@ def user_input_csv():
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
     data = request.get_json()
-    csv_b64 = data.get("csv_base64")
-    filename = data.get("filename", f"user_input.csv")
+    csv_b64 = data.get("csv_base64") # type: ignore
+    filename = data.get("filename", f"user_input.csv") # type: ignore
 
     if not csv_b64:
         return {"error": "Missing 'csv_base64' in request"}, 400

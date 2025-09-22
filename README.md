@@ -38,7 +38,7 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
     ```bash
     npm run dev
     ```
-5. Access the app at `http://localhost:3000`.
+5. Access the app at `http://localhost:5173`.
 
 ---
 
@@ -70,7 +70,7 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
 - `aml_core.py`: Core AML logic.
 - `main.py`: Flask entry point.
 - `explanation_service/explanation_core.py`: Forensic explanation logic.
-- `explanation_service/transaction_history.csv`: Sample transaction history.
+- `explanation_service/user_input.csv`: Sample user input.
 
 ---
 
@@ -137,6 +137,7 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
         "oracle_key_type": "secp256k1"
     }
     ```
+5. Note down the contract address displayed on terminal by Cosmy Wasmy extension. Update 'CONTRACT_ADDRESS' variable in the .env file in oracle-service directory.
 
 ---
 
