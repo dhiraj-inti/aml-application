@@ -13,9 +13,7 @@ function History() {
         const response = await fetch("http://localhost:8080/oracle/valid-transactions");
         if (!response.ok) throw new Error("Failed to fetch");
         const result = await response.json();
-        for (let index = 0; index < 100; index++) {
-          result.push(result[0])  
-        }
+       
         setData(result);
       } catch (err) {
         setError("Error fetching history");

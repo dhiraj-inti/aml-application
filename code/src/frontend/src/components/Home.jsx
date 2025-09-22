@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import toast, { Toaster } from 'react-hot-toast';
-
+import toast, { Toaster } from "react-hot-toast";
+import ReactMarkdown from "react-markdown";
 function Home() {
   const [csvFile, setCsvFile] = useState(null);
   const [apiMessage, setApiMessage] = useState("");
+  const [loadingUpload, setLoadingUpload] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showResponse, setShowResponse] = useState(false);
   const [responseData, setResponseData] = useState(null);
@@ -45,7 +46,7 @@ function Home() {
 
   const handleUploadFile = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingUpload(true);
     setApiMessage("");
     setShowResponse(false);
     setResponseData(null);
@@ -79,7 +80,7 @@ function Home() {
     } catch (error) {
       toast.error("Error submitting data");
     } finally {
-      setLoading(false);
+      setLoadingUpload(false);
     }
   };
   const handleSubmit = async (e) => {
@@ -94,26 +95,27 @@ function Home() {
       sender,
       receiver,
       amount,
-      timestamp: timestamp ? new Date(timestamp).toISOString().replace('Z', '') : "",
+      timestamp: timestamp
+        ? new Date(timestamp).toISOString().replace("Z", "")
+        : "",
     };
     console.log(payload);
-    
 
     try {
       // Example POST request
-      const response = await fetch('http://localhost:5000/aml-checks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:5000/aml-checks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       const data = await response.json();
       console.log(data);
-      
+
       if (response.status === 200) {
-      setResponseData(payload); // For demo, show payload
-      setShowResponse(true);
+        setResponseData(data); // For demo, show payload
+        setShowResponse(true);
       } else {
-        setApiMessage(data.message || 'Error submitting data');
+        setApiMessage(data.message || "Error submitting data");
       }
     } catch (error) {
       setApiMessage("Error submitting data");
@@ -144,7 +146,7 @@ function Home() {
         Enter transaction details and upload your transaction CSV (sender,
         receiver, amount, timestamp).
       </p>
-     
+
       <div className="bg-gray-800 rounded-xl shadow-lg p-8 w-full max-w-md mb-6">
         <label className="block text-white mb-2 font-semibold">Step-1</label>
         <label className="block text-white mb-2 font-semibold">
@@ -171,10 +173,10 @@ function Home() {
         )}
         <button
           onClick={handleUploadFile}
-          disabled={!csvFile || loading}
+          disabled={!csvFile || loadingUpload}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-2 px-4 rounded hover:from-blue-700 hover:to-purple-700 transition disabled:opacity-50"
         >
-          {loading ? "Uploading..." : "Upload & Analyze"}
+          {loadingUpload ? "Uploading..." : "Upload & Analyze"}
         </button>
       </div>
       <form
@@ -214,7 +216,7 @@ function Home() {
           className="block w-full text-gray-200 bg-gray-700 border border-gray-600 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
-       
+
         <button
           type="submit"
           disabled={loading || !csvFile}
@@ -222,11 +224,10 @@ function Home() {
         >
           {loading ? "Submitting..." : "Submit Transaction"}
         </button>
-        
       </form>
 
       {/* Success response container */}
-      {showResponse && (
+      {showResponse && responseData && (
         <div
           className={`fixed top-8 right-0 bg-white bg-opacity-95 border border-purple-400 rounded-xl shadow-2xl w-96 max-h-[70vh] overflow-y-auto z-50 flex flex-col
       transition-transform duration-500 ease-in-out
@@ -244,13 +245,25 @@ function Home() {
               ×
             </button>
           </div>
-          <div className="p-4 text-gray-800 animate-fade-in">
+          <div
+            className="p-4 text-gray-800 animate-fade-in overflow-y-auto"
+            style={{ maxHeight: "60vh" }}
+          >
             <div className="mb-2 text-sm text-gray-500">
-              Blockchain Analysis Result:
+              <span className="font-bold">Flag:</span>{" "}
+              <span
+                className={
+                  responseData.flag
+                    ? "text-red-600 font-bold"
+                    : "text-green-600 font-bold"
+                }
+              >
+                {responseData.flag ? "Risky" : "Safe"}
+              </span>
             </div>
-            <pre className="bg-gray-100 rounded p-2 text-xs overflow-x-auto">
-              {JSON.stringify(responseData, null, 2)}
-            </pre>
+            <div className="bg-gray-100 rounded p-2 text-sm mb-4">
+              <ReactMarkdown>{responseData.message}</ReactMarkdown>
+            </div>
             <div className="mt-4 flex items-center gap-2">
               <img
                 src="https://www.svgrepo.com/show/303287/bitcoin-logo.svg"

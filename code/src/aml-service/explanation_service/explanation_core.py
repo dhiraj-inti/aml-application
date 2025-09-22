@@ -56,7 +56,7 @@ def prepare_analysis_data(historical_data, transaction, rules):
 
 def generate_risk_analysis(RULES, transaction_payload):
     try:
-        historical_data = pd.read_csv('user_input.csv')
+        historical_data = pd.read_csv('explanation_service/user_input.csv')
         prompt_text = prepare_analysis_data(historical_data, transaction_payload, RULES)
 
         headers = {
