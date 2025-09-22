@@ -32,7 +32,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"sender\": \"wasm1sse6pdmn5s7epjycxadjzku4qfgs604cgur6me\",\r\n    \"receiver\": \"wasm1ga4d4tsxrk6na6ehttwvdfmn2ejy4gwfxpt2m7\",\r\n    \"amount\": 50,\r\n    \"timestamp\": 1695200022\r\n}",
+							"raw": "{\r\n    \"sender\": \"11zigLN7gKNKXDipWswH59oivhGKBdCMg\",\r\n    \"receiver\": \"1GqFHRZKnWX9jVBr17KUka2acBY5Lagrn7\",\r\n    \"amount\": 4200,\r\n    \"timestamp\": \"2017-09-20T18:00:00.000\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

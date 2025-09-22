@@ -101,7 +101,7 @@ def aml_checks():
             sender_msg = generate_risk_analysis(sender_rules, sender_res)
             receiver_msg = generate_risk_analysis(receiver_rules, receiver_res)
             message = (
-                f"Sender Analysis:\n{sender_msg}\n\nReceiver Analysis:\n{receiver_msg}"
+                f"**Sender Analysis**:\n{sender_msg}\n\n**Receiver Analysis**:\n{receiver_msg}"
             )
             flag = True
         elif sender_flag:

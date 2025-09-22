@@ -1,6 +1,10 @@
+from datetime import datetime
 import pandas as pd
 import requests
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_API_URL = os.getenv("GEMINI_API_URL","https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent")
@@ -48,7 +52,8 @@ def prepare_analysis_data(historical_data, transaction, rules):
     5. Suggestions for additional data or context that could improve future risk assessments.
 
 
-    Format your response as a professional forensic report, using bullet points, tables, or numbered lists where appropriate. Be concise, evidence-based, and reference both the rules and historical data.
+    Format your response as a professional forensic report, using bullet points, tables, or numbered lists where appropriate. Be concise, evidence-based, and reference both the rules and historical data. Take today's date as the analysis date.
+    as {datetime.now().date()}.
     """
 
     return analysis_text
