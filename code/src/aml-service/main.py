@@ -111,6 +111,7 @@ def aml_checks():
             message = generate_risk_analysis(receiver_rules, receiver_res)
             flag = True
         else:
+            add_to_csv(sender, receiver, amount, timestamp)
             invoke_add_to_blockchain_service(sender, receiver, amount, timestamp)
             message = "Added to blockchain successfully"
             flag = False
@@ -126,6 +127,18 @@ def is_iso_timestamp(iso_timestamp):
         return True
     except ValueError:
         return False
+    
+def add_to_csv(sender, receiver, amount, timestamp):
+    dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+    ts = dt.strftime("%d-%m-%Y %H:%M")
+    with open("./explanation_service/user_input.csv", "a", encoding="utf-8", newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=["sender", "receiver", "amount", "timestamp"])
+        writer.writerow({
+            "sender": sender,
+            "receiver": receiver,
+            "amount": amount,
+            "timestamp": ts
+        })
 
 def invoke_add_to_blockchain_service(sender, receiver, amount, timestamp):
     # Logic to call the oracle service to add transaction to the blockchain
