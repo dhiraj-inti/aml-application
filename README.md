@@ -23,11 +23,13 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
 
 ## Setup Instructions
 
-### 1. Client App (React) *(To be added)*
+### 1. Client App (React)
+
+**Directory:** `code/frontend`
 
 **Setup Steps:**
 1. Clone the repository.
-2. Navigate to the client app directory (once available).
+2. Navigate to the client app directory (frontend).
 3. Install dependencies:
     ```bash
     npm install
