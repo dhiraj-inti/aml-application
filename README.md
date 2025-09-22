@@ -25,7 +25,7 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
 
 ### 1. Client App (React)
 
-**Directory:** `code/frontend`
+**Directory:** `code/src/frontend`
 
 **Setup Steps:**
 1. Clone the repository.
@@ -36,7 +36,7 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
     ```
 4. Start the development server:
     ```bash
-    npm start
+    npm run dev
     ```
 5. Access the app at `http://localhost:3000`.
 
@@ -44,12 +44,12 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
 
 ### 2. AML Service (Flask)
 
-**Directory:** `code/aml-service`
+**Directory:** `code/src/aml-service`
 
 **Setup Steps:**
 1. Navigate to the AML Service directory:
     ```bash
-    cd code/aml-service
+    cd code/src/aml-service
     ```
 2. Create and activate a Python virtual environment:
     ```bash
@@ -76,16 +76,17 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
 
 ### 3. Oracle Service (Express)
 
-**Directory:** `code/oracle-service`
+**Directory:** `code/src/oracle-service`
 
 **Setup Steps:**
 1. Navigate to the Oracle Service directory:
     ```bash
-    cd code/oracle-service
+    cd code/src/oracle-service
     ```
 2. Install dependencies:
     ```bash
     npm install
+    npm install -g @cosmwasm/ts-codegen@1.6.0
     ```
 3. Start the Express server:
     ```bash
@@ -99,12 +100,50 @@ This repository contains a modular Anti-Money Laundering (AML) application desig
 - `src/routes.ts`: API routes.
 - `src/sdk/Oracle.client.ts`: Cosmos SDK integration.
 
+
+### 4. AML Contract (Rust)
+
+**Directory:** `code/src/aml-contract`
+
+**Setup Steps:**
+1. Navigate to the Oracle Service directory:
+    ```bash
+    cd code/src/oracle-service
+    ```
+2. Compile the smart contract:
+
+
+    ```bash
+    set RUSTFLAGS=-C link-arg=-s
+    cargo wasm
+    ```
+    Confirm `aml_contract.wasm` is listed
+    ```bash
+    dir target\wasm32-unknown-unknown\release\aml_contract.wasm
+    ```
+    Optimize WASM
+    ```bash
+    wasm-opt -Os --signext-lowering .\target/wasm32-unknown-unknown/release/aml_contract.wasm -o ./target/wasm32-unknown-unknown/release/aml_contract_opt.wasm
+    ```
+    Validate aml_contract_opt.wasm
+    ```bash
+    cosmwasm-check ./target/wasm32-unknown-unknown/release/aml_contract_opt.wasm
+    ```
+3. Deploy the smart contract by doing a right click on 'aml_contract_opt.wasm' and clicking on 'Upload contract'
+4. Note down the code_id given by Cosmy Wasmy and use 'Initialise' section of the extension to instantiate the contract with following payload:
+    ```json
+    {
+        "oracle_pubkey": "AjrX9BclyF9K8drtbJ+0+FBbGsS4Pg+UjPiYfBT7nRh2",
+        "oracle_key_type": "secp256k1"
+    }
+    ```
+
 ---
 
 ## Notes
 
 - Ensure all services are running before submitting transactions from the client app.
-- The blockchain contract and schema are located in `code/aml-contract` for advanced integrations.
+- The blockchain contract and schema are located in `code/src/aml-contract` for advanced integrations.
 - Environment variables can be configured in the `.env` files within each service directory.
 
 ---
