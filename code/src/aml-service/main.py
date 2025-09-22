@@ -129,16 +129,22 @@ def is_iso_timestamp(iso_timestamp):
 
 def invoke_add_to_blockchain_service(sender, receiver, amount, timestamp):
     # Logic to call the oracle service to add transaction to the blockchain
+    print(timestamp)
     if is_iso_timestamp(timestamp):
-        dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        # dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        # timestamp = int(dt.timestamp())
+        # print(timestamp)
+        dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f")
         timestamp = int(dt.timestamp())
-
+        print(timestamp)
+                
     response = requests.post("http://localhost:8080/oracle/add-transaction", json={
         "sender":sender,
-        "amount":amount,
+        "amount":int(amount),
         "receiver":receiver,
         "timestamp":timestamp
     })
+    print(response.text)
    
     if response.status_code != 200:
         raise Exception("Error calling oracle service")
