@@ -23,7 +23,7 @@ def prepare_analysis_data(historical_data, transaction, rules):
     FORENSIC CRYPTO TRANSACTION RISK REPORT
 
     SECTION 1: HISTORICAL TRANSACTION REFERENCE
-    - Data Source: transaction_history.csv
+    - Data Source: user_input.csv
     - Summary Table:
     {historical_data.to_string()}
     - Key Patterns: Identify trends, anomalies, or outliers in historical wallet activity.
@@ -56,7 +56,7 @@ def prepare_analysis_data(historical_data, transaction, rules):
 
 def generate_risk_analysis(RULES, transaction_payload):
     try:
-        historical_data = pd.read_csv('transaction_history.csv')
+        historical_data = pd.read_csv('user_input.csv')
         prompt_text = prepare_analysis_data(historical_data, transaction_payload, RULES)
 
         headers = {
@@ -91,7 +91,7 @@ def generate_risk_analysis(RULES, transaction_payload):
             print(f"Error: {response.status_code} - {response.text}")
 
     except FileNotFoundError:
-        print("Error: transaction_history.csv file not found.")
+        print("Error: user_input.csv file not found.")
         print("Please ensure the CSV file is in the same directory.")
     except Exception as e:
         print(f"Error: {str(e)}")

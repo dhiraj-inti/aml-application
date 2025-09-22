@@ -74,7 +74,7 @@ def aml_checks():
             "error": "Missing required fields"
         }
 
-    txs_df = pd.read_csv("explanation_service/transaction_history.csv")
+    txs_df = pd.read_csv("./explanation_service/user_input.csv")
     # Compute wallet metrics for sender and receiver
     sender_res, sender_rules = compute_wallet_metrics(
         wallet=sender,

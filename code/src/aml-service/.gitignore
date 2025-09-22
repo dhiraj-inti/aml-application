@@ -1,3 +1,5 @@
 venv
 
 .env
+__pycache__/
+explanation_service/__pycache__/
