@@ -23,19 +23,19 @@ def compute_wallet_metrics(wallet, txs_df, sender, receiver, amount, timestamp):
     INTERVAL_SECONDS_MIN = 720000
 
     RULES = [
-        {"rule": "Mean transaction amount > 47.5 BTC", "threshold": MEAN_BTC_THRESHOLD},
+        {"rule": f"Mean transaction amount > {MEAN_BTC_THRESHOLD} BTC", "threshold": MEAN_BTC_THRESHOLD},
         {
-            "rule": "Average time intervals < 720,000 seconds (200 hours)",
+            "rule": f"Average time intervals < {INTERVAL_SECONDS_MIN} seconds ({INTERVAL_SECONDS_MIN/3600} hours)",
             "threshold": INTERVAL_SECONDS_MIN,
         },
-        {"rule": "Unique senders > 7", "threshold": UNIQUE_SENDERS_MAX},
-        {"rule": "Unique receivers > 7", "threshold": UNIQUE_RECEIVERS_MAX},
+        {"rule": f"Unique senders > {UNIQUE_SENDERS_MAX}", "threshold": UNIQUE_SENDERS_MAX},
+        {"rule": f"Unique receivers > {UNIQUE_RECEIVERS_MAX}", "threshold": UNIQUE_RECEIVERS_MAX},
         {
-            "rule": "Fan-in/fan-out ratio not between 0.5 and 1.5",
+            "rule": f"Fan-in/fan-out ratio not between {RATIO_MIN} and {RATIO_MAX}",
             "min": RATIO_MIN,
             "max": RATIO_MAX,
         },
-        {"rule": "Big TXN threshold < 1.0 BTC", "threshold": BIG_TXN_BTC_THRESHOLD},
+        {"rule": f"Big TXN threshold < {BIG_TXN_BTC_THRESHOLD} BTC", "threshold": BIG_TXN_BTC_THRESHOLD},
     ]
 
     new_tx = {
